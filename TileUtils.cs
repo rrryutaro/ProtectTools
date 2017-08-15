@@ -219,15 +219,13 @@ namespace ProtectTools
             ItemID.CrystalShard,
         };
 
-        public static bool[] killItems = Enumerable.Repeat<bool>(true, ItemLoader.ItemCount).ToArray();
-
         public static bool isProtected(int i, int j)
         {
             bool result = false;
-            int itemType = TileUtils.getKillDropItemType(Main.tile[i, j]);
+            int itemType = getKillDropItemType(Main.tile[i, j]);
             if (0 < itemType)
             {
-                result = !TileUtils.killItems[itemType];
+                result = !TileWallUI.killItems[itemType];
             }
             return result;
         }

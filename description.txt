@@ -1,6 +1,10 @@
 Protect Tools:
-Protect tiles that are specified drop items from being destroyed.
+Protect tiles and walls that are specified drop items from being destroyed.
+Specify whether to use the whole protect in the config file.
+Modification of setting can be done with Mod Settings Configurator.
 
 *** Acknowledgments ***
 Most of this Mod's code is based on jopojelly's Recipe Browser.
 I am grateful to Mr. jopojelly for publishing a great code.
+In addition, Mod Settings uses Mod Settings Configurator.
+I am grateful to Mr. Flashkirby99 for making the setting of Mod easy.

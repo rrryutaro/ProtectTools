@@ -18,10 +18,8 @@ namespace ProtectTools
 			base.DrawSelf(spriteBatch);
 			if (IsMouseHovering)
 			{
-				Main.hoverItemName = hoverText;
-			//	Main.toolTip = new Item();
-			//	Main.toolTip.name = hoverText;
-			}
+                ProtectTools.instance.tileWallTool.tooltip = hoverText;
+            }
 		}
 	}
 }

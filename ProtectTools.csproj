@@ -71,6 +71,10 @@
       <Project>{3996d5fa-6e59-4fe4-9f2b-40eeef9645d5}</Project>
       <Name>Terraria</Name>
     </ProjectReference>
+    <ProjectReference Include="..\FKTModSettings\FKTModSettings.csproj">
+      <Project>{70439a48-ddbe-4116-b99f-335d204f4fc5}</Project>
+      <Name>FKTModSettings</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.UI;
+using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
 using ProtectTools.UIElements;
@@ -20,15 +21,25 @@ namespace ProtectTools
 		internal UIPanel inlaidPanel;
 		internal UIGrid grid;
         internal UIHoverImageButton closeButton;
+        internal UIHoverImageButton showTileButton;
+        internal UIHoverImageButton showWallButton;
 
         internal bool updateNeeded;
-        internal string caption = "Protect Tools v0.0.0.1";
+        internal string caption = "Protect Tools v0.0.1.0";
+
+        public static bool[] killItems = Enumerable.Repeat<bool>(true, ItemLoader.ItemCount).ToArray();
+
+        internal bool showTiles;
+        internal bool showWalls;
 
 
         public TileWallUI(UserInterface ui) : base(ui)
 		{
 			instance = this;
-		}
+
+            showTiles = true;
+            showWalls = true;
+        }
 
 		public override void OnInitialize()
 		{
@@ -74,14 +85,36 @@ namespace ProtectTools
 			lootItemsScrollbar.Left.Set(-20, 1f);
 			inlaidPanel.Append(lootItemsScrollbar);
 			grid.SetScrollbar(lootItemsScrollbar);
+
+            showTileButton = new UIHoverImageButton(Main.itemTexture[ItemID.DirtBlock].Resize(14, 14), "Show Tiles - on/off");
+            showTileButton.OnClick += showTileButtonClicked;
+            showTileButton.Left.Set(-40f, 1f);
+            showTileButton.Top.Set(3f, 0f);
+            mainPanel.Append(showTileButton);
+
+            showWallButton = new UIHoverImageButton(Main.itemTexture[ItemID.WoodWall].Resize(14, 14), "Show Walls - on/off");
+            showWallButton.OnClick += showWallButtonClicked;
+            showWallButton.Left.Set(-60f, 1f);
+            showWallButton.Top.Set(3f, 0f);
+            mainPanel.Append(showWallButton);
         }
 
         private void CloseButtonClicked(UIMouseEvent evt, UIElement listeningElement)
 		{
             ProtectTools.instance.tileWallTool.visible = !ProtectTools.instance.tileWallTool.visible;
         }
+        private void showTileButtonClicked(UIMouseEvent evt, UIElement listeningElement)
+        {
+            showTiles = !showTiles;
+            updateNeeded = true;
+        }
+        private void showWallButtonClicked(UIMouseEvent evt, UIElement listeningElement)
+        {
+            showWalls = !showWalls;
+            updateNeeded = true;
+        }
 
-		internal void UpdateGrid()
+        internal void UpdateGrid()
 		{
 			if (!updateNeeded) { return; }
 			updateNeeded = false;
@@ -91,25 +124,57 @@ namespace ProtectTools
             mainPanel.AddDragTarget(inlaidPanel);
             mainPanel.AddDragTarget(grid);
 
-            int[][] arrays =
+            if (showTiles)
             {
-                TileUtils.arrayItemBlock,
-                TileUtils.arrayItemOre,
-                TileUtils.arrayItemWood,
-                TileUtils.arrayItemBrick,
-                TileUtils.arrayItemJewelry,
-            };
+                int[][] arrays =
+                {
+                    TileUtils.arrayItemBlock,
+                    TileUtils.arrayItemOre,
+                    TileUtils.arrayItemWood,
+                    TileUtils.arrayItemBrick,
+                    TileUtils.arrayItemJewelry,
+                };
 
-            foreach (var itemType in arrays.SelectMany(x => x).ToArray())
-            {
-                Item item = new Item();
-                item.SetDefaults(itemType);
+                foreach (var itemType in arrays.SelectMany(x => x).ToArray())
+                {
+                    Item item = new Item();
+                    item.SetDefaults(itemType);
 
-                var box = new UITileSlot(item, 1f);
-                grid._items.Add(box);
-                grid._innerList.Append(box);
-                mainPanel.AddDragTarget(box);
+                    var box = new UITileWallSlot(item, 1f);
+                    grid._items.Add(box);
+                    grid._innerList.Append(box);
+                    mainPanel.AddDragTarget(box);
+                }
             }
+            if (showWalls)
+            {
+                int[][] arrays =
+                {
+                    WallUtils.arrayItemEnvironmentWall,
+                    WallUtils.arrayItemWoodWall,
+                    WallUtils.arrayItemBrickWall,
+                    WallUtils.arrayItemStuccoWall,
+                    WallUtils.arrayItemOreWall,
+                    WallUtils.arrayItemDungeonWall,
+                    WallUtils.arrayItemGlassWall,
+                    WallUtils.arrayItemFenceWall,
+                    WallUtils.arrayItemOtherCraftWall,
+                    WallUtils.arrayItemWallpaperWall,
+                    WallUtils.arrayItemSellWall,
+                };
+
+                foreach (var itemType in arrays.SelectMany(x => x).ToArray())
+                {
+                    Item item = new Item();
+                    item.SetDefaults(itemType);
+
+                    var box = new UITileWallSlot(item, 1f);
+                    grid._items.Add(box);
+                    grid._innerList.Append(box);
+                    mainPanel.AddDragTarget(box);
+                }
+            }
+
             grid.UpdateOrder();
 			grid._innerList.Recalculate();
 
@@ -126,6 +191,8 @@ namespace ProtectTools
         {
             public string position;
             public string killItems;
+            public bool? showTiles;
+            public bool? showWalls;
         }
         public override string SaveJsonString()
         {
@@ -133,7 +200,9 @@ namespace ProtectTools
 
             var info = new SaveInfo();
             info.position = mainPanel.SavePositionJsonString();
-            info.killItems = string.Join(",", TileUtils.killItems.Select(x => x ? 1 : 0));
+            info.killItems = string.Join(",", TileWallUI.killItems.Select(x => x ? 1 : 0));
+            info.showTiles = showTiles;
+            info.showWalls = showWalls;
             result = Newtonsoft.Json.JsonConvert.SerializeObject(info);
             return result;
         }
@@ -145,7 +214,11 @@ namespace ProtectTools
                 if (info.position != null)
                     mainPanel.LoadPositionJsonString(info.position);
                 if (info.killItems != null)
-                    TileUtils.killItems = info.killItems.Split(',').Select(x => x.Equals("1") ? true : false).ToArray<bool>();
+                    TileWallUI.killItems = info.killItems.Split(',').Select(x => x.Equals("1") ? true : false).ToArray<bool>();
+                if (info.showTiles != null)
+                    showTiles = (bool)info.showTiles;
+                if (info.showWalls != null)
+                    showWalls = (bool)info.showWalls;
             }
         }
     }

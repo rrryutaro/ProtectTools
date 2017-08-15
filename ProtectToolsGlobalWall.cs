@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Terraria;
 using Terraria.ModLoader;
 
 namespace ProtectTools
 {
-    class ProtectToolsGlobalTile : GlobalTile
+    class ProtectToolsGlobalWall : GlobalWall
     {
-        public override void KillTile(int i, int j, int type, ref bool fail, ref bool effectOnly, ref bool noItem)
+        public override void KillWall(int i, int j, int type, ref bool fail)
         {
             if (Config.isProtect && !fail)
             {
-                fail = TileUtils.isProtected(i, j);
+                fail = WallUtils.isProtected(i, j);
             }
         }
         public override bool CreateDust(int i, int j, int type, ref int dustType)
@@ -22,7 +21,7 @@ namespace ProtectTools
             bool result = true;
             if (Config.isProtect)
             {
-                result = !TileUtils.isProtected(i, j);
+                result = !WallUtils.isProtected(i, j);
             }
             return result;
         }
@@ -31,7 +30,7 @@ namespace ProtectTools
             bool result = true;
             if (Config.isProtect)
             {
-                result = !TileUtils.isProtected(i, j);
+                result = !WallUtils.isProtected(i, j);
             }
             return result;
         }
