@@ -1,0 +1,6 @@
+Protect Tools:
+Protect tiles that are specified drop items from being destroyed.
+
+*** Acknowledgments ***
+Most of this Mod's code is based on jopojelly's Recipe Browser.
+I am grateful to Mr. jopojelly for publishing a great code.
