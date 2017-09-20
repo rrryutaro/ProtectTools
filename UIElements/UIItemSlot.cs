@@ -16,21 +16,27 @@ namespace ProtectTools
 	{
 		public static Texture2D defaultBackgroundTexture = Main.inventoryBack9Texture;
         public static Texture2D selectedBackgroundTexture = Main.inventoryBack14Texture;
-		private float scale = .75f;
-		public int itemType;
+        public static float scale = 1.0f;
+        public int itemType;
 		public Item item;
         public bool enable;
 
-        public UIItemSlot(Item item, float scale = .75f)
+		public UIItemSlot(Item item)
 		{
-			this.scale = scale;
 			this.item = item;
 			this.itemType = item.type;
 			this.Width.Set(defaultBackgroundTexture.Width * scale, 0f);
 			this.Height.Set(defaultBackgroundTexture.Height * scale, 0f);
 		}
 
-		internal int frameCounter = 0;
+        public override void Recalculate()
+        {
+            this.Width.Set(defaultBackgroundTexture.Width * scale, 0f);
+            this.Height.Set(defaultBackgroundTexture.Height * scale, 0f);
+            base.Recalculate();
+        }
+
+        internal int frameCounter = 0;
 		internal int frameTimer = 0;
 		const int frameDelay = 7;
 		protected override void DrawSelf(SpriteBatch spriteBatch)
@@ -107,28 +113,6 @@ namespace ProtectTools
 					{
 						ChatManager.DrawColorCodedStringWithShadow(spriteBatch, Main.fontItemStack, item.stack.ToString(), dimensions.Position() + new Vector2(10f, 26f) * scale, Color.White, 0f, Vector2.Zero, new Vector2(scale), -1f, scale);
 					}
-
-					//this.item.GetColor(Color.White);
-					//spriteBatch.Draw(itemTexture, drawPosition, rectangle2, this.item.GetAlpha(Color.White), 0f, Vector2.Zero, drawScale, SpriteEffects.None, 0f);
-					//if (this.item.color != default(Color))
-					//{
-					//	spriteBatch.Draw(itemTexture, drawPosition, new Rectangle?(rectangle2), this.item.GetColor(Color.White), 0f, Vector2.Zero, drawScale, SpriteEffects.None, 0f);
-					//}
-					//if (this.item.stack > 1)
-					//{
-					//	spriteBatch.DrawString(Main.fontItemStack, this.item.stack.ToString(), new Vector2(drawPosition.X + 10f * scale, drawPosition.Y + 26f * scale), Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-					//}
-
-					//if (IsMouseHovering)
-					//{
-					//	// TODO, should only need 2 of these 3 I think
-					//	Main.HoverItem = item.Clone();
-					//	Main.hoverItemName = Main.HoverItem.Name + (Main.HoverItem.modItem != null ? " [" + Main.HoverItem.modItem.mod.Name + "]" : "");
-                    //
-					//	//	Main.hoverItemName = this.item.name;
-					//	//	Main.toolTip = item.Clone();
-					//	Main.HoverItem.SetNameOverride(Main.HoverItem.Name + (Main.HoverItem.modItem != null ? " [" + Main.HoverItem.modItem.mod.Name + "]" : ""));
-					//}
 				}
 			}
 		}

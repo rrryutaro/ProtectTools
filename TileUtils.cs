@@ -12,6 +12,19 @@ namespace ProtectTools
 {
     public static class TileUtils
     {
+        public static List<int> GetAllTiles()
+        {
+            List<int> result = new List<int>();
+
+            result.AddRange(arrayItemBlock);
+            result.AddRange(arrayItemOre);
+            result.AddRange(arrayItemWood);
+            result.AddRange(arrayItemBrick);
+            result.AddRange(arrayItemJewelry);
+
+            return result;
+        }
+
         /// <summary>
         /// ブロック系アイテム
         /// </summary>
@@ -222,10 +235,13 @@ namespace ProtectTools
         public static bool isProtected(int i, int j)
         {
             bool result = false;
-            int itemType = getKillDropItemType(Main.tile[i, j]);
-            if (0 < itemType)
+            if (Config.isProtect)
             {
-                result = !TileWallUI.killItems[itemType];
+                int itemType = getKillDropItemType(Main.tile[i, j]);
+                if (0 < itemType)
+                {
+                    result = !TileWallUI.killItems[itemType];
+                }
             }
             return result;
         }

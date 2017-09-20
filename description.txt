@@ -1,4 +1,4 @@
-Protect Tools:
+﻿Protect Tools:
 Protect tiles and walls that are specified drop items from being destroyed.
 Specify whether to use the whole protect in the config file.
 Modification of setting can be done with Mod Settings Configurator.

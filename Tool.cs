@@ -11,7 +11,7 @@ namespace ProtectTools
 		internal bool visible;
 		internal UserInterface userInterface;
 		internal UIModState uistate;
-        internal string tooltip;
+        internal static string tooltip;
 
 		public Tool(Type uistateType)
 		{

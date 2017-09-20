@@ -9,6 +9,7 @@ using Terraria.UI;
 using Terraria.ID;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
+using Terraria.ModLoader.IO;
 using ProtectTools.UIElements;
 
 namespace ProtectTools
@@ -17,21 +18,28 @@ namespace ProtectTools
 	{
 		static internal TileWallUI instance;
 
-		internal UIDragablePanel mainPanel;
-		internal UIPanel inlaidPanel;
-		internal UIGrid grid;
-        internal UIHoverImageButton closeButton;
-        internal UIHoverImageButton showTileButton;
-        internal UIHoverImageButton showWallButton;
+		internal UIDragablePanel panelMain;
+        internal UISplitterPanel panelSplitter;
+        internal UIPanel panelLeft;
+        internal UIPanel panelRight;
+        internal UIGrid gridLeft;
+        internal UIGrid gridRight;
+        internal UIHoverImageButton btnClose;
+        internal UIImageListButton btnIconSize;
+        internal UIImageListButton btnFilterNear;
+        internal UIImageListButton btnShowTile;
+        internal UIImageListButton btnShowWall;
+
+        static internal int menuIconSize = 28;
+        static internal int menuMargin = 4;
 
         internal bool updateNeeded;
-        internal string caption = "Protect Tools v0.0.1.0";
+        internal string caption = $"Protect Tools v{ProtectTools.instance.Version} Count:??";
 
         public static bool[] killItems = Enumerable.Repeat<bool>(true, ItemLoader.ItemCount).ToArray();
 
         internal bool showTiles;
         internal bool showWalls;
-
 
         public TileWallUI(UserInterface ui) : base(ui)
 		{
@@ -41,77 +49,148 @@ namespace ProtectTools
             showWalls = true;
         }
 
-		public override void OnInitialize()
-		{
-			mainPanel = new UIDragablePanel(true, true, true);
-            mainPanel.caption = caption;
-            mainPanel.SetPadding(6);
-			mainPanel.Left.Set(400f, 0f);
-			mainPanel.Top.Set(400f, 0f);
-            mainPanel.Width.Set(314f, 0f);
-            mainPanel.MinWidth.Set(314f, 0f);
-            mainPanel.MaxWidth.Set(1393f, 0f);
-            mainPanel.Height.Set(116, 0f);
-            mainPanel.MinHeight.Set(116, 0f);
-            mainPanel.MaxHeight.Set(1000, 0f);
-			Append(mainPanel);
+        public void InitializeUI()
+        {
+            RemoveAllChildren();
 
+            //メインパネル
+            panelMain = new UIDragablePanel(true, true, true);
+            panelMain.caption = caption;
+            panelMain.SetPadding(6);
+			panelMain.Left.Set(400f, 0f);
+			panelMain.Top.Set(400f, 0f);
+            panelMain.Width.Set(314f, 0f);
+            panelMain.MinWidth.Set(314f, 0f);
+            panelMain.MaxWidth.Set(1393f, 0f);
+            panelMain.Height.Set(116f, 0f);
+            panelMain.MinHeight.Set(116f, 0f);
+            panelMain.MaxHeight.Set(1000f, 0f);
+			Append(panelMain);
+
+            //左パネル
+            panelLeft = new UIPanel();
+            panelLeft.SetPadding(6);
+            panelLeft.MinWidth.Set(100, 0);
+            gridLeft = new UIGrid();
+            gridLeft.Width.Set(-20f, 1f);
+            gridLeft.Height.Set(0, 1f);
+            gridLeft.ListPadding = 2f;
+            panelLeft.Append(gridLeft);
+            var gridLeftScrollbar = new FixedUIScrollbar(userInterface);
+            gridLeftScrollbar.SetView(100f, 1000f);
+            gridLeftScrollbar.Height.Set(0, 1f);
+            gridLeftScrollbar.Left.Set(-20, 1f);
+            panelLeft.Append(gridLeftScrollbar);
+            gridLeft.SetScrollbar(gridLeftScrollbar);
+            //右パネル
+            panelRight = new UIPanel();
+            panelRight.SetPadding(6);
+            panelRight.MinWidth.Set(100, 0);
+            gridRight = new UIGrid();
+            gridRight.Width.Set(-20f, 1f);
+            gridRight.Height.Set(0, 1f);
+            gridRight.ListPadding = 2f;
+            panelRight.Append(gridRight);
+            var chestGridScrollbar = new FixedUIScrollbar(userInterface);
+            chestGridScrollbar.SetView(100f, 1000f);
+            chestGridScrollbar.Height.Set(0, 1f);
+            chestGridScrollbar.Left.Set(-20, 1f);
+            panelRight.Append(chestGridScrollbar);
+            gridRight.SetScrollbar(chestGridScrollbar);
+            //スプリッターパネル
+            panelSplitter = new UISplitterPanel(panelLeft, panelRight);
+            panelSplitter.SetPadding(0);
+            panelSplitter.Top.Pixels = menuIconSize + menuMargin * 2;
+            panelSplitter.Width.Set(0, 1f);
+            panelSplitter.Height.Set(-26 - menuIconSize, 1f);
+            panelSplitter.Panel1Visible = false;
+            panelMain.Append(panelSplitter);
+
+            //閉じるボタン
             Texture2D texture = ProtectTools.instance.GetTexture("UIElements/closeButton");
-            closeButton = new UIHoverImageButton(texture, "Close");
-            closeButton.OnClick += CloseButtonClicked;
-            closeButton.Left.Set(-20f, 1f);
-            closeButton.Top.Set(3f, 0f);
-            mainPanel.Append(closeButton);
-
-            inlaidPanel = new UIPanel();
-			inlaidPanel.SetPadding(6);
-            inlaidPanel.Top.Pixels = 20;
-            inlaidPanel.Width.Set(0, 1f);
-            inlaidPanel.Height.Set(0 - 40, 1f);
-            mainPanel.Append(inlaidPanel);
+            btnClose = new UIHoverImageButton(texture, "Close");
+            btnClose.OnClick += (a, b) => ProtectTools.instance.tileWallTool.visible = false;
+            btnClose.Left.Set(-20f, 1f);
+            btnClose.Top.Set(3f, 0f);
+            panelMain.Append(btnClose);
 
             UIItemSlot.defaultBackgroundTexture = UIItemSlot.defaultBackgroundTexture.Resize(32, 32);
             UIItemSlot.selectedBackgroundTexture = UIItemSlot.selectedBackgroundTexture.Resize(32, 32);
 
-            grid = new UIGrid();
-			grid.Width.Set(-20f, 1f); 
-			grid.Height.Set(0, 1f);
-			grid.ListPadding = 2f;
-			inlaidPanel.Append(grid);
+            //アイコンサイズボタン
+            btnIconSize = new UIImageListButton(
+                new List<Texture2D>() {
+                    Main.itemTexture[ItemID.Chest].Resize(menuIconSize),
+                    Main.itemTexture[ItemID.Chest].Resize((int)(menuIconSize * 0.8f)),
+                    Main.itemTexture[ItemID.Chest].Resize((int)(menuIconSize * 0.6f))},
+                new List<object>() { 1.0f, 0.8f, 0.6f },
+                new List<string>() { "Icon size large", "Icon size medium", "Icon size small" });
+            btnIconSize.OnClick += (a, b) =>
+            {
+                btnIconSize.NextIamge();
+                UIItemSlot.scale = btnIconSize.GetValue<float>();
+            };
+            btnIconSize.Left.Set(btnClose.Left.Pixels - menuMargin - menuIconSize, 1f);
+            btnIconSize.Top.Set(3f, 0f);
+            panelMain.Append(btnIconSize);
 
-			var lootItemsScrollbar = new FixedUIScrollbar(userInterface);
-			lootItemsScrollbar.SetView(100f, 1000f);
-			lootItemsScrollbar.Height.Set(0, 1f);
-			lootItemsScrollbar.Left.Set(-20, 1f);
-			inlaidPanel.Append(lootItemsScrollbar);
-			grid.SetScrollbar(lootItemsScrollbar);
+            //タイル表示/非表示ボタン
+            btnFilterNear = new UIImageListButton(
+                new List<Texture2D>() { Main.itemTexture[ItemID.AlphabetStatueF].Resize(menuIconSize), Main.itemTexture[ItemID.AlphabetStatueF].Resize(menuIconSize) },
+                new List<object>() { true, false },
+                new List<string>() { "Filter near", "Filter none" });
+            btnFilterNear.OnClick += (a, b) =>
+            {
+                btnFilterNear.NextIamge();
+                updateNeeded = true;
+            };
+            btnFilterNear.Left.Set(menuMargin, 0f);
+            btnFilterNear.Top.Set(3f, 0f);
+            panelMain.Append(btnFilterNear);
 
-            showTileButton = new UIHoverImageButton(Main.itemTexture[ItemID.DirtBlock].Resize(14, 14), "Show Tiles - on/off");
-            showTileButton.OnClick += showTileButtonClicked;
-            showTileButton.Left.Set(-40f, 1f);
-            showTileButton.Top.Set(3f, 0f);
-            mainPanel.Append(showTileButton);
+            //タイル表示/非表示ボタン
+            btnShowTile = new UIImageListButton(
+                new List<Texture2D>() { Main.itemTexture[ItemID.DirtBlock].Resize(menuIconSize), Main.itemTexture[ItemID.DirtBlock].Resize(menuIconSize) },
+                new List<object>() { true, false },
+                new List<string>() { "Display Tiles", "Hide Tiles" });
+            btnShowTile.OnClick += (a, b) =>
+            {
+                btnShowTile.NextIamge();
+                showTiles = btnShowTile.GetValue<bool>();
+                updateNeeded = true;
+            };
+            btnShowTile.Left.Set(btnFilterNear.Left.Pixels + menuIconSize + menuMargin, 0f);
+            btnShowTile.Top.Set(3f, 0f);
+            panelMain.Append(btnShowTile);
 
-            showWallButton = new UIHoverImageButton(Main.itemTexture[ItemID.WoodWall].Resize(14, 14), "Show Walls - on/off");
-            showWallButton.OnClick += showWallButtonClicked;
-            showWallButton.Left.Set(-60f, 1f);
-            showWallButton.Top.Set(3f, 0f);
-            mainPanel.Append(showWallButton);
+            //壁紙表示/非表示ボタン
+            btnShowWall = new UIImageListButton(
+                new List<Texture2D>() { Main.itemTexture[ItemID.WoodWall].Resize(menuIconSize), Main.itemTexture[ItemID.WoodWall].Resize(menuIconSize) },
+                new List<object>() { true, false },
+                new List<string>() { "Display Walls", "Hide Walls" });
+            btnShowWall.OnClick += (a, b) =>
+            {
+                btnShowWall.NextIamge();
+                showWalls = btnShowWall.GetValue<bool>();
+                updateNeeded = true;
+            };
+            btnShowWall.Left.Set(btnShowTile.Left.Pixels + menuIconSize + menuMargin, 0f);
+            btnShowWall.Top.Set(3f, 0f);
+            panelMain.Append(btnShowWall);
         }
 
-        private void CloseButtonClicked(UIMouseEvent evt, UIElement listeningElement)
-		{
-            ProtectTools.instance.tileWallTool.visible = !ProtectTools.instance.tileWallTool.visible;
-        }
-        private void showTileButtonClicked(UIMouseEvent evt, UIElement listeningElement)
-        {
-            showTiles = !showTiles;
-            updateNeeded = true;
-        }
         private void showWallButtonClicked(UIMouseEvent evt, UIElement listeningElement)
         {
             showWalls = !showWalls;
             updateNeeded = true;
+        }
+
+        private void Clear()
+        {
+            gridLeft.Clear();
+            gridRight.Clear();
+            panelMain.DragTargetClear();
+            panelSplitter.Recalculate();
         }
 
         internal void UpdateGrid()
@@ -119,66 +198,54 @@ namespace ProtectTools
 			if (!updateNeeded) { return; }
 			updateNeeded = false;
 
-            grid.Clear();
-            mainPanel.DragTargetClear();
-            mainPanel.AddDragTarget(inlaidPanel);
-            mainPanel.AddDragTarget(grid);
+            Clear();
+
+            List<int> tiles;
+            List<int> walls;
+
+            if (btnFilterNear.GetValue<bool>())
+            {
+                List<int>[] lists = ProtectToolsUtils.GetScreenContainTilesAndWalls();
+                tiles = lists[0];
+                walls = lists[1];
+            }
+            else
+            {
+                tiles = TileUtils.GetAllTiles();
+                walls = WallUtils.GetAllWalls();
+            }
 
             if (showTiles)
             {
-                int[][] arrays =
-                {
-                    TileUtils.arrayItemBlock,
-                    TileUtils.arrayItemOre,
-                    TileUtils.arrayItemWood,
-                    TileUtils.arrayItemBrick,
-                    TileUtils.arrayItemJewelry,
-                };
-
-                foreach (var itemType in arrays.SelectMany(x => x).ToArray())
+                foreach (var itemType in tiles)
                 {
                     Item item = new Item();
                     item.SetDefaults(itemType);
 
-                    var box = new UITileWallSlot(item, 1f);
-                    grid._items.Add(box);
-                    grid._innerList.Append(box);
-                    mainPanel.AddDragTarget(box);
+                    var box = new UITileWallSlot(item);
+                    gridRight._items.Add(box);
+                    gridRight._innerList.Append(box);
+                    panelMain.AddDragTarget(box);
                 }
             }
             if (showWalls)
             {
-                int[][] arrays =
-                {
-                    WallUtils.arrayItemEnvironmentWall,
-                    WallUtils.arrayItemWoodWall,
-                    WallUtils.arrayItemBrickWall,
-                    WallUtils.arrayItemStuccoWall,
-                    WallUtils.arrayItemOreWall,
-                    WallUtils.arrayItemDungeonWall,
-                    WallUtils.arrayItemGlassWall,
-                    WallUtils.arrayItemFenceWall,
-                    WallUtils.arrayItemOtherCraftWall,
-                    WallUtils.arrayItemWallpaperWall,
-                    WallUtils.arrayItemSellWall,
-                };
-
-                foreach (var itemType in arrays.SelectMany(x => x).ToArray())
+                foreach (var itemType in walls)
                 {
                     Item item = new Item();
                     item.SetDefaults(itemType);
 
-                    var box = new UITileWallSlot(item, 1f);
-                    grid._items.Add(box);
-                    grid._innerList.Append(box);
-                    mainPanel.AddDragTarget(box);
+                    var box = new UITileWallSlot(item);
+                    gridRight._items.Add(box);
+                    gridRight._innerList.Append(box);
+                    panelMain.AddDragTarget(box);
                 }
             }
 
-            grid.UpdateOrder();
-			grid._innerList.Recalculate();
+            gridRight.UpdateOrder();
+            gridRight._innerList.Recalculate();
 
-            mainPanel.caption = caption.Replace("??", $"{grid.Count}");
+            panelMain.caption = caption.Replace("??", $"{gridRight.Count}");
         }
 
 		public override void Update(GameTime gameTime)
@@ -187,39 +254,59 @@ namespace ProtectTools
 			UpdateGrid();
 		}
 
-        private class SaveInfo
+        public override TagCompound Save()
         {
-            public string position;
-            public string killItems;
-            public bool? showTiles;
-            public bool? showWalls;
-        }
-        public override string SaveJsonString()
-        {
-            string result = string.Empty;
+            TagCompound result = base.Save();
 
-            var info = new SaveInfo();
-            info.position = mainPanel.SavePositionJsonString();
-            info.killItems = string.Join(",", TileWallUI.killItems.Select(x => x ? 1 : 0));
-            info.showTiles = showTiles;
-            info.showWalls = showWalls;
-            result = Newtonsoft.Json.JsonConvert.SerializeObject(info);
+            if (panelMain != null)
+            {
+                result.Add("position", panelMain.SavePositionJsonString());
+                result.Add("SplitterBarLeft", panelSplitter.GetSplitterBarLeft());
+                result.Add("killItems", string.Join(",", TileWallUI.killItems.Select(x => x ? 1 : 0)));
+            
+                result.Add("btnIconSize", btnIconSize.Index);
+                result.Add("btnFilterNear", btnFilterNear.Index);
+                result.Add("btnShowTile", btnShowTile.Index);
+                result.Add("btnShowWall", btnShowWall.Index);
+            }
+
             return result;
         }
-        public override void LoadJsonString(string jsonString)
+
+        public override void Load(TagCompound tag)
         {
-            if (!string.IsNullOrEmpty(jsonString))
+            base.Load(tag);
+
+            if (tag.ContainsKey("position"))
             {
-                var info = Newtonsoft.Json.JsonConvert.DeserializeObject<SaveInfo>(jsonString);
-                if (info.position != null)
-                    mainPanel.LoadPositionJsonString(info.position);
-                if (info.killItems != null)
-                    TileWallUI.killItems = info.killItems.Split(',').Select(x => x.Equals("1") ? true : false).ToArray<bool>();
-                if (info.showTiles != null)
-                    showTiles = (bool)info.showTiles;
-                if (info.showWalls != null)
-                    showWalls = (bool)info.showWalls;
+                panelMain.LoadPositionJsonString(tag.GetString("position"));
+            }
+            if (tag.ContainsKey("SplitterBarLeft"))
+            {
+                panelSplitter.SetSplitterBarLeft(tag.GetFloat("SplitterBarLeft"));
+            }
+            if (tag.ContainsKey("killItems"))
+            {
+                TileWallUI.killItems = tag.GetString("killItems").Split(',').Select(x => x.Equals("1") ? true : false).ToArray<bool>();
+            }
+            if (tag.ContainsKey("btnIconSize"))
+            {
+                btnIconSize.Index = tag.GetInt("btnIconSize");
+                UIItemSlot.scale = btnIconSize.GetValue<float>();
+            }
+            if (tag.ContainsKey("btnFilterNear"))
+            {
+                btnFilterNear.Index = tag.GetInt("btnFilterNear");
+            }
+            if (tag.ContainsKey("btnShowTile"))
+            {
+                btnShowTile.Index = tag.GetInt("btnShowTile");
+            }
+            if (tag.ContainsKey("btnShowWall"))
+            {
+                btnShowWall.Index = tag.GetInt("btnShowWall");
             }
         }
+
     }
 }

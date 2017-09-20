@@ -91,11 +91,8 @@ namespace ProtectTools
 
 		private void DragEnd(UIMouseEvent evt)
 		{
-			if (evt.Target == this || additionalDragTargets.Contains(evt.Target))
-			{
-				dragging = false;
-				resizeing = false;
-			}
+			dragging = false;
+			resizeing = false;
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
@@ -137,7 +134,9 @@ namespace ProtectTools
             if (!string.IsNullOrEmpty(caption))
             {
                 dimensions = base.GetOuterDimensions();
-                spriteBatch.DrawString(Main.fontMouseText, caption, dimensions.Position().Offset(7, 5), Color.Wheat);
+                //spriteBatch.DrawString(Main.fontMouseText, caption, dimensions.Position().Offset(7, 5), Color.Wheat);
+                float fontHeight = Main.fontMouseText.MeasureString(caption).Y;
+                spriteBatch.DrawString(Main.fontMouseText, caption, dimensions.Position().Offset(7, dimensions.Height - fontHeight - 4), Color.Wheat);
             }
         }
 

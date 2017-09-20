@@ -11,28 +11,18 @@ namespace ProtectTools
     {
         public override void KillWall(int i, int j, int type, ref bool fail)
         {
-            if (Config.isProtect && !fail)
+            if (!fail)
             {
                 fail = WallUtils.isProtected(i, j);
             }
         }
         public override bool CreateDust(int i, int j, int type, ref int dustType)
         {
-            bool result = true;
-            if (Config.isProtect)
-            {
-                result = !WallUtils.isProtected(i, j);
-            }
-            return result;
+            return !WallUtils.isProtected(i, j);
         }
         public override bool KillSound(int i, int j, int type)
         {
-            bool result = true;
-            if (Config.isProtect)
-            {
-                result = !WallUtils.isProtected(i, j);
-            }
-            return result;
+            return !WallUtils.isProtected(i, j);
         }
     }
 }

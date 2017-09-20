@@ -1,5 +1,5 @@
-author = R
-version = 0.0.1.0
+﻿author = R
+version = 0.1.0.0
 displayName = Protect Tools
 homepage = https://forums.terraria.org/index.php?threads/protect-tools.61099/
 weakReferences = FKTModSettings

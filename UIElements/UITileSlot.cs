@@ -14,7 +14,7 @@ namespace ProtectTools.UIElements
 		public static Texture2D selectedBackgroundTexture = Main.inventoryBack15Texture;
 		public static Texture2D recentlyDiscoveredBackgroundTexture = Main.inventoryBack10Texture;
 
-        public UITileWallSlot(Item item, float scale = 0.75f) : base(item, scale)
+        public UITileWallSlot(Item item) : base(item)
 		{
             enable = TileWallUI.killItems[item.type];
         }
@@ -31,9 +31,9 @@ namespace ProtectTools.UIElements
             base.DrawSelf(spriteBatch);
             if (IsMouseHovering)
             {
-                ProtectTools.instance.tileWallTool.tooltip = item.Name;
+                Tool.tooltip = item.Name;
+               
             }
         }
-
     }
 }

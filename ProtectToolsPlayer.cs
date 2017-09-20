@@ -13,7 +13,7 @@ namespace ProtectTools
 {
 	public class ProtectToolsPlayer : ModPlayer
 	{
-        private string saveInfoTileWallUI;
+        private TagCompound saveData;
 
         public override void ProcessTriggers(TriggersSet triggersSet)
 		{
@@ -29,7 +29,7 @@ namespace ProtectTools
 		{
             return new TagCompound
             {
-                ["TileWallUI"] = ProtectTools.instance.tileWallTool.uistate.SaveJsonString(),
+                ["TileWallUI"] = ProtectTools.instance.tileWallTool.uistate.Save(),
             };
         }
 
@@ -37,13 +37,20 @@ namespace ProtectTools
 		{
             if (tag.ContainsKey("TileWallUI"))
             {
-                saveInfoTileWallUI = tag.GetString("TileWallUI");
+                if (tag.Get<object>("TileWallUI").GetType().Equals(typeof(TagCompound)))
+                {
+                    saveData = tag.Get<TagCompound>("TileWallUI");
+                }
             }
 		}
 
         public override void OnEnterWorld(Player player)
         {
-            ProtectTools.instance.tileWallTool.uistate.LoadJsonString(saveInfoTileWallUI);
+            TileWallUI.instance.InitializeUI();
+            if (saveData != null)
+            {
+                ProtectTools.instance.tileWallTool.uistate.Load(saveData);
+            }
         }
     }
 }

@@ -12,6 +12,25 @@ namespace ProtectTools
 {
     public static class WallUtils
     {
+        public static List<int> GetAllWalls()
+        {
+            List<int> result = new List<int>();
+
+            result.AddRange(arrayItemEnvironmentWall);
+            result.AddRange(arrayItemWoodWall);
+            result.AddRange(arrayItemBrickWall);
+            result.AddRange(arrayItemStuccoWall);
+            result.AddRange(arrayItemOreWall);
+            result.AddRange(arrayItemDungeonWall);
+            result.AddRange(arrayItemGlassWall);
+            result.AddRange(arrayItemFenceWall);
+            result.AddRange(arrayItemOtherCraftWall);
+            result.AddRange(arrayItemWallpaperWall);
+            result.AddRange(arrayItemSellWall);
+
+            return result;
+        }
+
         /// <summary>
         /// 環境背景壁
         /// </summary>
@@ -238,10 +257,13 @@ namespace ProtectTools
         public static bool isProtected(int i, int j)
         {
             bool result = false;
-            int itemType = getKillDropItemType(Main.tile[i, j]);
-            if (0 < itemType)
+            if (Config.isProtect)
             {
-                result = !TileWallUI.killItems[itemType];
+                int itemType = getKillDropItemType(Main.tile[i, j]);
+                if (0 < itemType)
+                {
+                    result = !TileWallUI.killItems[itemType];
+                }
             }
             return result;
         }

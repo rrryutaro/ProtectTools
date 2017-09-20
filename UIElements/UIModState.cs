@@ -1,4 +1,5 @@
 ﻿using Terraria.UI;
+using Terraria.ModLoader.IO;
 
 namespace ProtectTools
 {
@@ -11,11 +12,12 @@ namespace ProtectTools
 			this.userInterface = userInterface;
 		}
 
-        public virtual string SaveJsonString()
+        public virtual TagCompound Save()
         {
-            return string.Empty;
+            TagCompound result = new TagCompound();
+            return result;
         }
-        public virtual void LoadJsonString(string jsonString)
+        public virtual void Load(TagCompound tag)
         {
         }
     }
