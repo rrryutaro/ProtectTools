@@ -34,7 +34,31 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="**/*.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Include="obj\Release\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
+    <Compile Include="obj\Release\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
+    <Compile Include="obj\Release\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
+    <Compile Include="ProtectTools.cs" />
+    <Compile Include="ProtectToolsGlobalTile.cs" />
+    <Compile Include="ProtectToolsGlobalWall.cs" />
+    <Compile Include="ProtectToolsPlayer.cs" />
+    <Compile Include="ProtectToolsUtils.cs" />
+    <Compile Include="TileUtils.cs" />
+    <Compile Include="TileWallTool.cs" />
+    <Compile Include="TileWallUI.cs" />
+    <Compile Include="Tool.cs" />
+    <Compile Include="UIElements\UIDragablePanel.cs" />
+    <Compile Include="UIElements\UIGrid.cs" />
+    <Compile Include="UIElements\UIHoverImageButton.cs" />
+    <Compile Include="UIElements\UIImageListButton.cs" />
+    <Compile Include="UIElements\UIItemSlot.cs" />
+    <Compile Include="UIElements\UIModState.cs" />
+    <Compile Include="UIElements\UISplitterPanel.cs" />
+    <Compile Include="UIElements\UITileSlot.cs" />
+    <Compile Include="WallUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86">

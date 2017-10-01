@@ -25,7 +25,22 @@ namespace ProtectTools
         }
         public override bool Slope(int i, int j, int type)
         {
-            return !TileUtils.isProtected(i, j);
+            bool result = !TileUtils.isProtected(i, j);
+            int sloop = TileWallUI.instance.btnSlope.GetValue<int>();
+            if (0 <= sloop)
+            {
+                result = false;
+                if (sloop == 5)
+                {
+                    Main.tile[i, j].halfBrick(false);
+                    WorldGen.PoundTile(i, j);
+                }
+                else
+                {
+                    WorldGen.SlopeTile(i, j, sloop);
+                }
+            }
+            return result;
         }
         public override bool CreateDust(int i, int j, int type, ref int dustType)
         {

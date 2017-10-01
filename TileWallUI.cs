@@ -29,6 +29,9 @@ namespace ProtectTools
         internal UIImageListButton btnFilterNear;
         internal UIImageListButton btnShowTile;
         internal UIImageListButton btnShowWall;
+        internal UIImageListButton btnSlope;
+        internal UIImageListButton btnReverse;
+        internal UIImageListButton btnReload;
 
         static internal int menuIconSize = 28;
         static internal int menuMargin = 4;
@@ -134,7 +137,8 @@ namespace ProtectTools
             btnIconSize.Top.Set(3f, 0f);
             panelMain.Append(btnIconSize);
 
-            //タイル表示/非表示ボタン
+            //フィルターボタン
+            int leftPos = menuMargin;
             btnFilterNear = new UIImageListButton(
                 new List<Texture2D>() { Main.itemTexture[ItemID.AlphabetStatueF].Resize(menuIconSize), Main.itemTexture[ItemID.AlphabetStatueF].Resize(menuIconSize) },
                 new List<object>() { true, false },
@@ -144,11 +148,12 @@ namespace ProtectTools
                 btnFilterNear.NextIamge();
                 updateNeeded = true;
             };
-            btnFilterNear.Left.Set(menuMargin, 0f);
+            btnFilterNear.Left.Set(leftPos, 0f);
             btnFilterNear.Top.Set(3f, 0f);
             panelMain.Append(btnFilterNear);
 
             //タイル表示/非表示ボタン
+            leftPos += menuIconSize + menuMargin;
             btnShowTile = new UIImageListButton(
                 new List<Texture2D>() { Main.itemTexture[ItemID.DirtBlock].Resize(menuIconSize), Main.itemTexture[ItemID.DirtBlock].Resize(menuIconSize) },
                 new List<object>() { true, false },
@@ -159,11 +164,12 @@ namespace ProtectTools
                 showTiles = btnShowTile.GetValue<bool>();
                 updateNeeded = true;
             };
-            btnShowTile.Left.Set(btnFilterNear.Left.Pixels + menuIconSize + menuMargin, 0f);
+            btnShowTile.Left.Set(leftPos, 0f);
             btnShowTile.Top.Set(3f, 0f);
             panelMain.Append(btnShowTile);
 
             //壁紙表示/非表示ボタン
+            leftPos += menuIconSize + menuMargin;
             btnShowWall = new UIImageListButton(
                 new List<Texture2D>() { Main.itemTexture[ItemID.WoodWall].Resize(menuIconSize), Main.itemTexture[ItemID.WoodWall].Resize(menuIconSize) },
                 new List<object>() { true, false },
@@ -174,15 +180,60 @@ namespace ProtectTools
                 showWalls = btnShowWall.GetValue<bool>();
                 updateNeeded = true;
             };
-            btnShowWall.Left.Set(btnShowTile.Left.Pixels + menuIconSize + menuMargin, 0f);
+            btnShowWall.Left.Set(leftPos, 0f);
             btnShowWall.Top.Set(3f, 0f);
             panelMain.Append(btnShowWall);
-        }
 
-        private void showWallButtonClicked(UIMouseEvent evt, UIElement listeningElement)
-        {
-            showWalls = !showWalls;
-            updateNeeded = true;
+            //スロープボタン
+            leftPos += menuIconSize + menuMargin;
+            texture = ProtectTools.instance.GetTexture("UIElements/blocks");
+            btnSlope = new UIImageListButton(
+                new List<Texture2D>() {
+                    Main.itemTexture[ItemID.AlphabetStatueA].Resize(menuIconSize),
+                    texture.Offset(0, 0, 16, 16).Resize(menuIconSize),
+                    texture.Offset(16, 0, 16, 16).Resize(menuIconSize),
+                    texture.Offset(32, 0, 16, 16).Resize(menuIconSize),
+                    texture.Offset(48, 0, 16, 16).Resize(menuIconSize),
+                    texture.Offset(64, 0, 16, 16).Resize(menuIconSize),
+                    texture.Offset(80, 0, 16, 16).Resize(menuIconSize)
+                },
+                new List<object>() { -1, 0, 5, 1, 2, 3, 4 },
+                new List<string>() { "Slope: Auto", "Slope: Block", "Slope: Half", "Slope: TopRight", "Slope: TopLeft", "Slope: BottomRight", "Slope: BottomLeft" });
+            btnSlope.OnClick += (a, b) =>
+            {
+                btnSlope.NextIamge();
+            };
+            btnSlope.Left.Set(leftPos, 0f);
+            btnSlope.Top.Set(3f, 0f);
+            panelMain.Append(btnSlope);
+
+            //リバースボタン
+            leftPos += menuIconSize + menuMargin;
+            btnReverse = new UIImageListButton(
+                new List<Texture2D>() { Main.itemTexture[ItemID.AlphabetStatueR].Resize(menuIconSize) },
+                new List<object>() { 0 },
+                new List<string>() { "Selection reverse" });
+            btnReverse.OnClick += (a, b) =>
+            {
+                gridRight._items.ForEach(x => x.RightClick(new UIMouseEvent(x, Main.MouseScreen)));
+            };
+            btnReverse.Left.Set(leftPos, 0f);
+            btnReverse.Top.Set(3f, 0f);
+            panelMain.Append(btnReverse);
+
+            //リロードボタン
+            leftPos += (menuIconSize + menuMargin) * 2;
+            btnReload = new UIImageListButton(
+                new List<Texture2D>() { ProtectTools.instance.GetTexture("UIElements/reload").Resize(menuIconSize) },
+                new List<object>() { 0 },
+                new List<string>() { "Reload" });
+            btnReload.OnClick += (a, b) =>
+            {
+                updateNeeded = true;
+            };
+            btnReload.Left.Set(leftPos, 0f);
+            btnReload.Top.Set(3f, 0f);
+            panelMain.Append(btnReload);
         }
 
         private void Clear()

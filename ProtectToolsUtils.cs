@@ -13,6 +13,15 @@ namespace ProtectTools
     {
         public const int tileSize = 16;
 
+        public static Texture2D Offset(this Texture2D texture, int x, int y, int width, int height)
+        {
+            Texture2D result = new Texture2D(Main.graphics.GraphicsDevice, width, height);
+            Color[] data = new Color[height * width];
+            texture.GetData(0, new Rectangle?(new Rectangle(x, y, width, height)), data, 0, data.Length);
+            result.SetData(data);
+            return result;
+        }
+
         public static Texture2D Resize(this Texture2D texture, int width, int height)
         {
             Texture2D result = texture;
@@ -28,7 +37,7 @@ namespace ProtectTools
         {
             Texture2D result = texture;
 
-            float max = texture.Width < texture.Height ? texture.Height : texture.Width;
+            float max = Math.Max(texture.Width, texture.Height);
             float scale = size / max;
             int width = (int)(texture.Width * scale);
             int height = (int)(texture.Height * scale);
@@ -53,7 +62,6 @@ namespace ProtectTools
             List<int>[] result = { new List<int>(), new List<int>() };
             int maxX = Main.screenWidth / tileSize;
             int maxY = Main.screenHeight / tileSize;
-            //Tile[,] tiles = new Tile[maxX, maxY];
 
             Point pos = Main.sceneTilePos.ToTileCoordinates();
 
@@ -64,7 +72,6 @@ namespace ProtectTools
             {
                 for (int y = pos.Y; y < pos.Y + maxY; y++)
                 {
-                    //tiles[x - pos.X, y - pos.Y] = Main.tile[x, y];
                     var tile = Main.tile[x, y];
                     var tileItemType = TileUtils.getKillDropItemType(tile);
                     var wallItemType = WallUtils.getKillDropItemType(tile);

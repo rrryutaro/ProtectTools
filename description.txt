@@ -1,5 +1,9 @@
 ﻿Protect Tools:
-Protect tiles and walls that are specified drop items from being destroyed.
+Protect specific tiles and walls from being destroyed.
+To specify protection, right click and select the target item.
+The tiles that are dark background are protected.
+It is also possible to fix the shape of the slope when hit with a hammer.
+
 Specify whether to use the whole protect in the config file.
 Modification of setting can be done with Mod Settings Configurator.
 
