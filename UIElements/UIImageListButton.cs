@@ -13,8 +13,8 @@ namespace ProtectTools.UIElements
         private List<Texture2D> _textures;
         private List<string> _hoverTexts;
         private List<object> _values;
-        private float _visibilityActive = 1f;
-        private float _visibilityInactive = 0.4f;
+        internal float visibilityActive = 1f;
+        internal float visibilityInactive = 0.4f;
         internal int Index { get; set; }
 
         public T GetValue<T>()
@@ -54,7 +54,7 @@ namespace ProtectTools.UIElements
 
         protected override void DrawSelf(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(this._textures[Index], GetCenterPosition(GetDimensions().ToRectangle(), this._textures[Index]), Color.White * (base.IsMouseHovering ? this._visibilityActive : this._visibilityInactive));
+            spriteBatch.Draw(this._textures[Index], GetCenterPosition(GetDimensions().ToRectangle(), this._textures[Index]), Color.White * (base.IsMouseHovering ? this.visibilityActive : this.visibilityInactive));
             if (IsMouseHovering)
             {
                 Tool.tooltip = $"Current:{_hoverTexts[Index]}{Environment.NewLine}Next:{GetNextTooltip()}";
@@ -69,13 +69,19 @@ namespace ProtectTools.UIElements
 
         public void SetVisibility(float whenActive, float whenInactive)
         {
-            this._visibilityActive = MathHelper.Clamp(whenActive, 0f, 1f);
-            this._visibilityInactive = MathHelper.Clamp(whenInactive, 0f, 1f);
+            this.visibilityActive = MathHelper.Clamp(whenActive, 0f, 1f);
+            this.visibilityInactive = MathHelper.Clamp(whenInactive, 0f, 1f);
         }
 
         public int NextIamge()
         {
             Index = GetNextImageIndex();
+            return Index;
+        }
+
+        public int PrevIamge()
+        {
+            Index = GetPrevImageIndex();
             return Index;
         }
 
@@ -85,6 +91,16 @@ namespace ProtectTools.UIElements
             if (_textures.Count <= result)
             {
                 result = 0;
+            }
+            return result;
+        }
+
+        private int GetPrevImageIndex()
+        {
+            int result = Index - 1;
+            if (result < 0)
+            {
+                result = _textures.Count - 1;
             }
             return result;
         }

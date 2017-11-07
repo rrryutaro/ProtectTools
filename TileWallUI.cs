@@ -203,6 +203,10 @@ namespace ProtectTools
             {
                 btnSlope.NextIamge();
             };
+			btnSlope.OnRightClick += (a, b) =>
+			{
+				btnSlope.PrevIamge();
+			};
             btnSlope.Left.Set(leftPos, 0f);
             btnSlope.Top.Set(3f, 0f);
             panelMain.Append(btnSlope);
