@@ -1,8 +1,9 @@
 ﻿author = R
-version = 0.1.1.1
+version = 0.2
 displayName = Protect Tools
 homepage = https://forums.terraria.org/index.php?threads/protect-tools.61099/
-weakReferences = FKTModSettings
-buildIgnore = .vs\*, Properties\*, *.csproj, *.user, obj\*, bin\*, *.config, unused\*
-includePDB = false
-languageVersion = 6
+hideCode = false
+hideResources = false
+includeSource = true
+buildIgnore = *.csproj, *.user, obj\*, bin\*, .vs\*
+includePDB = true

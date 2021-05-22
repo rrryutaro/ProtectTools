@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -235,7 +230,7 @@ namespace ProtectTools
         public static bool isProtected(int i, int j)
         {
             bool result = false;
-            if (Config.isProtect)
+            if (ModContent.GetInstance<ProtectToolsConfig>().isProtect)
             {
                 int itemType = getKillDropItemType(Main.tile[i, j]);
                 if (0 < itemType)
