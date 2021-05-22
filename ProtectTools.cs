@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
+using System.Collections.Generic;
 using Terraria;
 using Terraria.UI;
 using Terraria.ModLoader;
-using FKTModSettings;
 
 namespace ProtectTools
 {
-	class ProtectTools : Mod
-	{
+    class ProtectTools : Mod
+    {
+        internal static string OldConfigFilePath = Path.Combine(Main.SavePath, "Mod Configs", "ProtectTools.json");
         internal static ProtectTools instance;
         internal ModHotKey HotKey;
         internal TileWallTool tileWallTool;
@@ -18,13 +19,13 @@ namespace ProtectTools
         int lastSeenScreenHeight;
 
         public ProtectTools()
-		{
-			Properties = new ModProperties()
-			{
-				Autoload = true,
-				AutoloadGores = true,
-				AutoloadSounds = true
-			};
+        {
+            Properties = new ModProperties()
+            {
+                Autoload = true,
+                AutoloadGores = true,
+                AutoloadSounds = true
+            };
         }
 
         public override void Load()
@@ -33,18 +34,14 @@ namespace ProtectTools
             HotKey = RegisterHotKey("Toggle Protect Tool", "Y");
             if (!Main.dedServ)
             {
-                tileWallTool = new TileWallTool();
-
-                Config.LoadConfig();
-                LoadedFKTModSettings = ModLoader.GetMod("FKTModSettings") != null;
-                try
+                // 旧設定ファイルの削除
+                var oldConfigPath = Path.Combine(Main.SavePath, "Mod Configs", "TeraBackup.json"); ;
+                if (File.Exists(oldConfigPath))
                 {
-                    if (LoadedFKTModSettings)
-                    {
-                        LoadModSettings();
-                    }
+                    File.Delete(oldConfigPath);
                 }
-                catch { }
+
+                tileWallTool = new TileWallTool();
             }
         }
 
@@ -85,38 +82,6 @@ namespace ProtectTools
                     },
                     InterfaceScaleType.UI)
                 );
-            }
-        }
-
-        public override void PreSaveAndQuit()
-        {
-            Config.SaveValues();
-        }
-
-        public override void PostUpdateInput()
-        {
-            try
-            {
-                if (LoadedFKTModSettings && !Main.gameMenu)
-                {
-                    UpdateModSettings();
-                }
-            }
-            catch { }
-        }
-
-        private void LoadModSettings()
-        {
-            ModSetting setting = ModSettingsAPI.CreateModSettingConfig(this);
-            setting.AddBool("isProtect", "Enable Protect Mode", false);
-        }
-
-        private void UpdateModSettings()
-        {
-            ModSetting setting;
-            if (ModSettingsAPI.TryGetModSetting(this, out setting))
-            {
-                setting.Get("isProtect", ref Config.isProtect);
             }
         }
     }

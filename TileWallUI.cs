@@ -1,7 +1,5 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -14,11 +12,11 @@ using ProtectTools.UIElements;
 
 namespace ProtectTools
 {
-	class TileWallUI : UIModState
-	{
-		static internal TileWallUI instance;
+    class TileWallUI : UIModState
+    {
+        static internal TileWallUI instance;
 
-		internal UIDragablePanel panelMain;
+        internal UIDragablePanel panelMain;
         internal UISplitterPanel panelSplitter;
         internal UIPanel panelLeft;
         internal UIPanel panelRight;
@@ -45,8 +43,8 @@ namespace ProtectTools
         internal bool showWalls;
 
         public TileWallUI(UserInterface ui) : base(ui)
-		{
-			instance = this;
+        {
+            instance = this;
 
             showTiles = true;
             showWalls = true;
@@ -60,15 +58,15 @@ namespace ProtectTools
             panelMain = new UIDragablePanel(true, true, true);
             panelMain.caption = caption;
             panelMain.SetPadding(6);
-			panelMain.Left.Set(400f, 0f);
-			panelMain.Top.Set(400f, 0f);
+            panelMain.Left.Set(400f, 0f);
+            panelMain.Top.Set(400f, 0f);
             panelMain.Width.Set(314f, 0f);
             panelMain.MinWidth.Set(314f, 0f);
             panelMain.MaxWidth.Set(1393f, 0f);
             panelMain.Height.Set(116f, 0f);
             panelMain.MinHeight.Set(116f, 0f);
             panelMain.MaxHeight.Set(1000f, 0f);
-			Append(panelMain);
+            Append(panelMain);
 
             //左パネル
             panelLeft = new UIPanel();
@@ -203,10 +201,10 @@ namespace ProtectTools
             {
                 btnSlope.NextIamge();
             };
-			btnSlope.OnRightClick += (a, b) =>
-			{
-				btnSlope.PrevIamge();
-			};
+            btnSlope.OnRightClick += (a, b) =>
+            {
+                btnSlope.PrevIamge();
+            };
             btnSlope.Left.Set(leftPos, 0f);
             btnSlope.Top.Set(3f, 0f);
             panelMain.Append(btnSlope);
@@ -249,9 +247,9 @@ namespace ProtectTools
         }
 
         internal void UpdateGrid()
-		{
-			if (!updateNeeded) { return; }
-			updateNeeded = false;
+        {
+            if (!updateNeeded) { return; }
+            updateNeeded = false;
 
             Clear();
 
@@ -303,11 +301,11 @@ namespace ProtectTools
             panelMain.caption = caption.Replace("??", $"{gridRight.Count}");
         }
 
-		public override void Update(GameTime gameTime)
-		{
-			base.Update(gameTime);
-			UpdateGrid();
-		}
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+            UpdateGrid();
+        }
 
         public override TagCompound Save()
         {
@@ -318,7 +316,7 @@ namespace ProtectTools
                 result.Add("position", panelMain.SavePositionJsonString());
                 result.Add("SplitterBarLeft", panelSplitter.GetSplitterBarLeft());
                 result.Add("killItems", string.Join(",", TileWallUI.killItems.Select(x => x ? 1 : 0)));
-            
+
                 result.Add("btnIconSize", btnIconSize.Index);
                 result.Add("btnFilterNear", btnFilterNear.Index);
                 result.Add("btnShowTile", btnShowTile.Index);
